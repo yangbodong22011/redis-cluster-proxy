@@ -31,10 +31,20 @@
 #define CLIENT_STATUS_LINKED        1
 #define CLIENT_STATUS_UNLINKED      2
 
-#define getClientLoop(c) (proxy.threads[c->thread_id]->loop)
+#define getClientThread(c)      (proxy.threads[c->thread_id])
+#define getClientLoop(c)        (proxy.threads[c->thread_id]->loop)
+#define getClientClusterConnection(c) \
+    (c->cluster_connection ? c->cluster_connection : \
+                             getClientThread(c)->cluster_connection)
+#define getClientSlotsMap(c) \
+    (c->cluster_connection ? c->cluster_connection->slots_map :\
+                             proxy.cluster->slots_map)
+#define getClientNodeByKey(c, key, len, getslot) \
+    (getNodeByKey(getClientSlotsMap(c), key, len, getslot))
 
 struct proxyThread;
 struct clientRequest;
+struct redisClusterConnection;
 
 typedef struct {
     redisCluster *cluster;
@@ -58,6 +68,7 @@ typedef struct {
     size_t written;
     int status;
     int has_write_handler;
+    struct redisClusterConnection *cluster_connection;
     struct clientRequest *current_request; /* Currently reading */
     list *requests_to_process; /* Requests not completely parsed */
 } client;

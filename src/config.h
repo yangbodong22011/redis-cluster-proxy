@@ -18,6 +18,10 @@
 #ifndef __REDIS_CLUSTER_PROXY_CONFIG_H__
 #define __REDIS_CLUSTER_PROXY_CONFIG_H__
 
+#define CFG_DISABLE_MULTIPLEXING_NEVER      0
+#define CFG_DISABLE_MULTIPLEXING_AUTO       1
+#define CFG_DISABLE_MULTIPLEXING_ALWAYS     2
+
 typedef struct {
     int port;
     char *cluster_address;
@@ -32,6 +36,7 @@ typedef struct {
     int use_colors;
     int dump_queries;
     int dump_buffer;
+    int disable_multiplexing;
     char *auth;
 } redisClusterProxyConfig;
 
